@@ -1,12 +1,12 @@
 import requests, locale, pandas as pd, io
 from datetime import date, timedelta
-from electricProvider import electricProvider
+from power_outages_api.electric_provided import ElectricProvider
 
-class edenorte(electricProvider):
+class Edenorte(ElectricProvider):
     url = 'https://edenorte.com.do/category/programa-de-mantenimiento-de-redes/'
     def __init__(self):
         self.columns = ['province', 'day', 'time', 'sectors', '']
-        super().__init__(edenorte.url)
+        super().__init__(Edenorte.url)
         
     @staticmethod
     def get_monday() -> date:
@@ -64,6 +64,9 @@ class edenorte(electricProvider):
             except KeyError:
                 raise Exception('Error downloading file. Website structure may have changed.')
         
+        # if the loop finishes without returning, we did not find a download link
+        raise Exception('Error fetching download link. Website structure may have changed.')
+        
     def _prepare_data(self):
         '''
         Opens a file-like object in memory
@@ -99,6 +102,7 @@ class edenorte(electricProvider):
                     formatted_day = day.strftime('%A %d de %B')
                     
                 data.append({
+                    'week_number': f'{date.today().isocalendar()[1]}',
                     'day': f"{formatted_day}, {date.today().year}",
                     'province': province,
                     'maintenance': maintenance
@@ -107,7 +111,7 @@ class edenorte(electricProvider):
         return data
             
 def get_edenorte_data():
-    edenorte_inst = edenorte()
+    edenorte_inst = Edenorte()
     return edenorte_inst
 
 if __name__ == '__main__':

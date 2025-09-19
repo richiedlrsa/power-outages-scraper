@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-class electricProvider:
+class ElectricProvider:
     def __init__(self, url):
         self.url = url
         self.data = self._organize_data()

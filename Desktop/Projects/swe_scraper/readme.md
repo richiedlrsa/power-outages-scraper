@@ -14,6 +14,7 @@ Unexpected power outages are a huge painpoint in the Dominican Republic. This sc
 1. **Clone the repository**:
 ```
 git clone https://github.com/richiedlrsa/power-outages-scraper
+cd swe_scraper/power_outages_api
 ```
 2. Create and activate virtual environment (Recommended):
 
@@ -46,36 +47,55 @@ pip install -r requirements.txt
 
     ```
     set GEMINI_API_KEY=<INSERT KEY HERE>
+    ```
 
     * The script will look for a key named 'GEMINI_API_KEY'. Please do not use a different name.
 
 ## How to use
 
-To run a scraper, execute the corresponding Python file. The script will print the scheduled maintenance information to your terminal.
+1. **Populate the Database**
 
-Examples
+Run the ```main.py``` script to scrape the latest data from all providers and save it to the outages.db SQLite database.
 
 ```
-# get outages for edesur
-python edesur.py
-
-# get outages for edeeste
-python edeeste.py
-
-# get outages for edenorte
-python edenorte.py
+python main.py
 ```
 
-Sample output
+2. Run the API Server
+
+Once the database is populated, start the FastAPI server using FastAPI
+
+```
+fastapi dev routes.py
+```
+
+The API will now be running on http://127.0.0.1:8000/
+
+## API Endpoints
+
+You can access the interactive API documentation at http://127.0.0.1:8000/docs
+
+Get All Outages
+* **URL:** /outages/
+* **Method:** GET
+* **Description:** Retrieves all scheduled maintenance events from the database for the current week.
+* **Sample Response:**
+
 ```
 [
     {
-    'day': day_of_outage
-    'province': affected_province
+    'id': 1,
+    'week': 39,
+    'day': "lunes 22 de septiembre, 2025",
+    'province': "Santo Domingo",
     'maintenance': [
         {
-        'time': time_of_outage
-        'sectors': [list_of_affected_sectors]
+        'time': "9:00 AM - 1:00 PM",
+        'sectors': [
+            "Piantini",
+            "Naco",
+            "Bella Vista"
+        ]
         }
     ]
     }

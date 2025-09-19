@@ -2,14 +2,17 @@ import locale, requests, os, io, pandas as pd
 from datetime import date, timedelta
 from google import genai
 from pdf2image import convert_from_path
-from electricProvider import electricProvider
+from power_outages_api.electric_provided import ElectricProvider
 
-class edeeste(electricProvider):
+class ModelError(Exception):
+    pass
+
+class Edeeste(ElectricProvider):
     url = 'https://edeeste.com.do/index.php/programa-de-mantenimiento/'
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
     def __init__(self):
-        self.soup = electricProvider.get_soup(self.url, edeeste.headers)
-        super().__init__(edeeste.url)
+        self.soup = ElectricProvider.get_soup(self.url, Edeeste.headers)
+        super().__init__(Edeeste.url)
 
     @staticmethod
     def _get_date_range() -> tuple:
@@ -51,7 +54,7 @@ class edeeste(electricProvider):
         Downloads the file and saves it to the current directory
         returns the name of the saved file
         """
-        file_content = requests.get(self._get_download_link(), headers = edeeste.headers)
+        file_content = requests.get(self._get_download_link(), headers = Edeeste.headers)
         monday, sunday = self._get_date_range()
         file_name = f'{monday} - {sunday}.pdf'
         if not os.path.exists(file_name):
@@ -87,6 +90,10 @@ class edeeste(electricProvider):
         # turns each page of the pdf file into an image obect
         images = convert_from_path(pdf_file, dpi = 200)
         
+        # the pdf file will no longer be used
+        if os.path.exists(pdf_file):
+            os.remove(pdf_file)
+        
         for image in images:
             prompt.append(image)
             
@@ -97,7 +104,7 @@ class edeeste(electricProvider):
                 contents = prompt
             )
         except Exception:
-            raise Exception('AI model not currently available. Please try again later or use a different model.')
+            raise ModelError('AI model not currently available. Please try again later or use a different model.')
         
         return response.text
     
@@ -118,6 +125,7 @@ class edeeste(electricProvider):
                     maintenance.append({'time': row.time, 'sectors': row.sectors.split(',')})
                     
                 data.append({
+                    'week_number': f'{date.today().isocalendar()[1]}',
                     'day': f"{day}, {date.today().year}",
                     'province': province,
                     'maintenance': maintenance
@@ -126,7 +134,7 @@ class edeeste(electricProvider):
         return data
 
 def get_edeeste_data():
-    edeeste_inst = edeeste()
+    edeeste_inst = Edeeste()
     return edeeste_inst
 
 if __name__ == '__main__':
