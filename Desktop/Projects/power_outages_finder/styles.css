@@ -1,0 +1,118 @@
+  :root {
+            --primary-color: #007bff;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --heading-color: #0056b3;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            color: var(--heading-color);
+            font-size: 2.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+        
+        .filter-section {
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            row-gap: 20px;
+            column-gap: 8px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            width: 180px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+        }
+
+        .form-group button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            width: 150px;
+            height: 40px;
+            font-size: 15px;
+            padding: 4px 8px;
+        }
+        
+        .form-group button:hover {
+            background-color: var(--heading-color);
+        }
+
+        .outage-card {
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+
+        .outage-card h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        .province-section { margin-top: 20px; }
+        .province-section h3 { font-size: 1.2rem; margin-bottom: 10px; }
+        .maintenance-list { list-style: none; padding-left: 0; }
+        .maintenance-item { border-left: 3px solid var(--primary-color); padding-left: 15px; margin-bottom: 15px; }
+        .maintenance-item .time { font-weight: bold; display: block; margin-bottom: 5px; }
+        .sectors-list { list-style-type: disc; padding-left: 20px; margin: 0; color: #555; }
+
+        footer { text-align: center; margin-top: 40px; color: #888; }

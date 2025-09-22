@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduled Power Outages</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1 id='title'>Todos los Mantenimientos Programados</h1>
+            <p>Encuentra mantenimientos en tu area.</p>
+        </header>
+
+        <main>
+            <section class="filter-section">
+                <form action="index.html" method="get">
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label for="company">Compañía</label>
+                            <select id="company" name="company">
+                                <option value="" id="selected-company">Selecciona una compañia</option>
+                                <option value="Edeeste" id="edeeste">Edeeste</option>
+                                <option value="Edesur" id="edesur">Edesur</option>
+                                <option value="Edenorte" id="edenorte">Edenorte</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="province">Provincia</label>
+                            <select id="province" name="province">
+                                <option value="" id="selected-province">Selecciona una provincia</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sector-input">Sector</label>
+                            <input type="text" id="sector-input" name="sector" list="sector-list" placeholder="e.g., Piantini">
+                            <datalist id="sector-list">
+                            </datalist>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">Fecha</label>
+                            <input type="date" id="date" name="date">
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit">Buscar</button>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="clear">Limpiar Filtros</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">Compañía</th>
+                    <th scope="col">Provincia</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Hora</th>
+                    <th scope="col">Sector</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table"></tbody>
+            </table>
+                <nav aria-label="...">
+            <ul class="pagination" id="pagination">
+                <li class="page-item" id="previous-btn">
+                <a class="page-link" href="#">Anterior</a>
+                </li>
+            </ul>
+            </nav>
+            </main>
+
+        <footer>
+            <p>Datos actualizados diariamente mediante Power Outages Scraper, desarrollado por Richie de la Rosa.</p>
+        </footer>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>
