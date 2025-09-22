@@ -6,6 +6,7 @@ from power_outages_api import MaintenanceEvent, MaintenanceEventBase, engine
 from sqlalchemy.orm import selectinload
 from datetime import date
 from main import run_scraper
+from sqlalchemy.exc import ProgrammingError
 
 app = FastAPI()
 origins = ["*"]
@@ -35,12 +36,15 @@ def trigger_scraper():
 
 @app.get('/outages/', response_model = List[MaintenanceEventBase])
 def outages(db: SessionDep, page: int | None = None, limit: int | None = None):
-    statement = select(MaintenanceEvent). \
-                where(MaintenanceEvent.week_number == date.today().isocalendar()[1]). \
-                where(MaintenanceEvent.day.ilike(f'%{date.today().year}%')). \
-                order_by(MaintenanceEvent.province, MaintenanceEvent.day). \
-                options(selectinload(MaintenanceEvent.maintenance))
-    outages = db.exec(statement).all()
+    try:
+        statement = select(MaintenanceEvent). \
+                    where(MaintenanceEvent.week_number == date.today().isocalendar()[1]). \
+                    where(MaintenanceEvent.day.ilike(f'%{date.today().year}%')). \
+                    order_by(MaintenanceEvent.province, MaintenanceEvent.day). \
+                    options(selectinload(MaintenanceEvent.maintenance))
+        outages = db.exec(statement).all()
+    except ProgrammingError:
+        raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail = "Database table does not exist.")
     
     if not outages:
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Data not found.")

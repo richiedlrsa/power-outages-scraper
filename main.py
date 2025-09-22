@@ -2,6 +2,7 @@ import asyncio
 from power_outages_api import Edeeste, Edesur, Edenorte, MaintenanceEvent, TimeSectors, engine, ModelError
 from sqlmodel import SQLModel, Session, delete
 from datetime import date
+from sqlalchemy.exc import ProgrammingError
 
 async def get_outages(company):
     '''
@@ -54,10 +55,12 @@ def create_models(outages) -> None:
         # first ensure that we have updated data for the company before deleting it
         
         companies_to_delete = [company for company in ('Edeeste', 'Edesur', 'Edenorte') if any(company in outage.values() for outage in outages)]
-        
-        session.exec(delete(MaintenanceEvent). \
-            where(MaintenanceEvent.week_number == date.today().isocalendar()[1],
-            MaintenanceEvent.company.in_(companies_to_delete)))
+        try:
+            session.exec(delete(MaintenanceEvent). \
+                where(MaintenanceEvent.week_number == date.today().isocalendar()[1],
+                MaintenanceEvent.company.in_(companies_to_delete)))
+        except ProgrammingError:
+            print('Skipping deletion. Table does not exist.')
     
         for outage in outages:
             outage_obj = MaintenanceEvent(week_number = outage['week_number'], company = outage['company'], day = outage['day'], province = outage['province'])
