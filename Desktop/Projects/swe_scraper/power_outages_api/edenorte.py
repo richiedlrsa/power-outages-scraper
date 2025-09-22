@@ -1,6 +1,6 @@
 import requests, locale, pandas as pd, io
 from datetime import date, timedelta
-from power_outages_api.electric_provided import ElectricProvider
+from power_outages_api.electric_providers import ElectricProvider
 
 class Edenorte(ElectricProvider):
     url = 'https://edenorte.com.do/category/programa-de-mantenimiento-de-redes/'
@@ -97,23 +97,16 @@ class Edenorte(ElectricProvider):
                 # if the date is returned as an Excel serial number, convert it to a date time object and format it.
                 if isinstance(row.day, int):
                     # an Excel date serial number represents n days from 1899-12-30. Adding those days gives the current date.
-                    formatted_day = (date.fromisoformat('1899-12-30') + timedelta(days = day)).strftime('%A %d de %B')
+                    day_to_append = (date.fromisoformat('1899-12-30') + timedelta(days = day))
                 else:
-                    formatted_day = day.strftime('%A %d de %B')
+                    day_to_append = str(day.date())
                     
                 data.append({
+                    'company': 'Edenorte',
                     'week_number': f'{date.today().isocalendar()[1]}',
-                    'day': f"{formatted_day}, {date.today().year}",
+                    'day': day_to_append,
                     'province': province,
                     'maintenance': maintenance
                 }) 
                 
         return data
-            
-def get_edenorte_data():
-    edenorte_inst = Edenorte()
-    return edenorte_inst
-
-if __name__ == '__main__':
-    edenorte = get_edenorte_data()
-    print(edenorte.data)

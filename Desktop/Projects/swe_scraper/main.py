@@ -49,7 +49,7 @@ def create_models(outages) -> None:
     with Session(engine) as session:
     
         for outage in outages:
-            outage_obj = MaintenanceEvent(week_number = outage['week_number'], day = outage['day'], province = outage['province'])
+            outage_obj = MaintenanceEvent(week_number = outage['week_number'], company = outage['company'], day = outage['day'], province = outage['province'])
             for maintenance in outage['maintenance']:
                 maintenance_obj = TimeSectors(time = maintenance['time'], sectors = maintenance['sectors'])
 
@@ -58,7 +58,14 @@ def create_models(outages) -> None:
             session.add(outage_obj)
             
         session.commit()
-
-if __name__ == '__main__':
+        
+def run_scraper():
+    '''
+    This is the main function that will be called by our API endpoint
+    '''
+    
+    print("Database check...")
     create_db()
+    print("Starting scraping process...")
     asyncio.run(main())
+    print("Scraping process finished.")

@@ -1,8 +1,8 @@
 import locale, requests, os, io, pandas as pd
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from google import genai
 from pdf2image import convert_from_path
-from power_outages_api.electric_provided import ElectricProvider
+from power_outages_api.electric_providers import ElectricProvider
 
 class ModelError(Exception):
     pass
@@ -15,26 +15,25 @@ class Edeeste(ElectricProvider):
         super().__init__(Edeeste.url)
 
     @staticmethod
-    def _get_date_range() -> tuple:
+    def _get_monday() -> tuple:
         """
-        Gets the start and end of the current week in the following format:
+        Gets the start of the current week in the following format:
         'lunes 01 de enero'
-        Return a tuple (start_of_week, end_of_week)
+        Return the start of the week
         """
         # changes the language of the datetime objects to Spansh
         locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
         today = date.today()
         monday = (today - timedelta(days = today.weekday())).strftime('%A %d de %B')
-        sunday = (today - timedelta(days = today.weekday()) + timedelta(days = 6)).strftime('%A %d de %B')
         
-        return (monday, sunday)
+        return monday
     
     def _get_download_link(self) -> str:
         """
         Searches the website for the download link for the maintenance schedule of the current week
         Returns the link as a strng
         """
-        monday = self._get_date_range()[0]
+        monday = self._get_monday()
         parent_tag = self.soup.find_all('div', class_ = 'media')
         if not parent_tag:
             raise Exception('Error fetching data. Website structure may have changed.')
@@ -55,8 +54,7 @@ class Edeeste(ElectricProvider):
         returns the name of the saved file
         """
         file_content = requests.get(self._get_download_link(), headers = Edeeste.headers)
-        monday, sunday = self._get_date_range()
-        file_name = f'{monday} - {sunday}.pdf'
+        file_name = 'temp.pdf'
         if not os.path.exists(file_name):
             with open(file_name, 'wb') as pdf:
                 pdf.write(file_content.content)
@@ -123,20 +121,17 @@ class Edeeste(ElectricProvider):
                 maintenance = []
                 for _, row in filtered_data.iterrows():
                     maintenance.append({'time': row.time, 'sectors': row.sectors.split(',')})
+                try:
+                    formatted_date = str(datetime.strptime(day + f', {date.today().year}', '%A %d de %B, %Y').date())
+                except ValueError:
+                    formatted_date = 'Date not available.'
                     
                 data.append({
+                    'company': 'Edeeste',
                     'week_number': f'{date.today().isocalendar()[1]}',
-                    'day': f"{day}, {date.today().year}",
+                    'day': formatted_date,
                     'province': province,
                     'maintenance': maintenance
                 })
                 
         return data
-
-def get_edeeste_data():
-    edeeste_inst = Edeeste()
-    return edeeste_inst
-
-if __name__ == '__main__':
-    edeeste = get_edeeste_data()
-    print(edeeste.data)

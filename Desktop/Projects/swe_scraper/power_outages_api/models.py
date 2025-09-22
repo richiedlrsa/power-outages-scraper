@@ -10,8 +10,8 @@ class TimeSectorsBase(BaseModel):
     sectors: List[str] = []
 
 class MaintenanceEventBase(BaseModel):
-    id: int
     week_number: int
+    company: str
     day: str
     province: str
     maintenance: List[TimeSectorsBase] = []
@@ -19,6 +19,7 @@ class MaintenanceEventBase(BaseModel):
 class MaintenanceEvent(SQLModel, table = True):
     id: int | None = Field(default = None, primary_key = True)
     week_number: int
+    company: str
     day: str
     province: str
     maintenance: List['TimeSectors'] = Relationship(back_populates = 'maintenance_event')

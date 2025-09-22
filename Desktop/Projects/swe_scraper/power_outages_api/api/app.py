@@ -1,0 +1,1 @@
+from power_outages_api.routes import app

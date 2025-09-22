@@ -86,7 +86,7 @@ Get All Outages
     {
     'id': 1,
     'week': 39,
-    'day': "lunes 22 de septiembre, 2025",
+    'day': "2025-09-22",
     'province': "Santo Domingo",
     'maintenance': [
         {

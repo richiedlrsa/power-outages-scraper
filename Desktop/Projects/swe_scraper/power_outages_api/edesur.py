@@ -1,6 +1,7 @@
 import re
-from power_outages_api.electric_provided import ElectricProvider
-from datetime import date
+from power_outages_api.electric_providers import ElectricProvider
+from datetime import date, datetime
+import locale
 
 class Edesur(ElectricProvider):
     time_pattern = r'\d{1,2}:\d{2} [aApP]\.?\s?[mM]\.?'
@@ -40,6 +41,7 @@ class Edesur(ElectricProvider):
         Scrapes and organizes the data for the scheduled maintenance for each day
         Returns a list of dictionaries
         """
+        locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
         data = []
         for item in self._get_day_ids():
             day = self.soup.find('button', id = item + '-tab')
@@ -51,21 +53,17 @@ class Edesur(ElectricProvider):
                 province = tag.find('h4', class_ = 'mb-0')
                 if not province:
                     continue
+                try:
+                    formatted_date = str(datetime.strptime(day, '%A %d de %B, %Y').date())
+                except ValueError:
+                    formatted_date = 'Date not available.'
                 province = province.text.strip()
                 data.append({
+                    'company': 'Edesur',
                     'week_number': f'{date.today().isocalendar()[1]}',
-                    'day': day,
+                    'day': formatted_date,
                     'province': province,
                     'maintenance': self._parse_city(tag)
                 }) 
                 
         return data
-    
-    
-def get_edesur_data():
-    edesur_inst = Edesur()
-    return edesur_inst
-
-if __name__ == '__main__':
-    edesur = get_edesur_data()
-    print(edesur.data)
