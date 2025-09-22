@@ -78,5 +78,3 @@ def run_scraper():
     create_db()
     asyncio.run(main())
     print("Scraping process finished.")
-    
-run_scraper()
