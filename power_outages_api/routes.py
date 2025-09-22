@@ -5,7 +5,6 @@ from typing import Annotated, List
 from power_outages_api import MaintenanceEvent, MaintenanceEventBase, engine
 from sqlalchemy.orm import selectinload
 from datetime import date
-from main import run_scraper
 from sqlalchemy.exc import ProgrammingError
 
 app = FastAPI()
@@ -24,15 +23,6 @@ def get_session():
         yield session
         
 SessionDep = Annotated[Session, Depends(get_session)]
-
-@app.post('/api/run-scraper')
-def trigger_scraper():
-    try:
-        run_scraper()
-        return {'status': 'sucess', 'message': 'Scraper ran successfully!'}
-    except Exception as e:
-        print(f'Error during scraping process: {e}')
-        raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail = str(e))
 
 @app.get('/outages/', response_model = List[MaintenanceEventBase])
 def outages(db: SessionDep, page: int | None = None, limit: int | None = None):

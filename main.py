@@ -73,11 +73,7 @@ def create_models(outages) -> None:
             
         session.commit()
         
-def run_scraper():
-    '''
-    This is the main function that will be called by our API endpoint
-    '''
-    
+if __name__ == '__main__':
     create_db()
     asyncio.run(main())
     print("Scraping process finished.")
