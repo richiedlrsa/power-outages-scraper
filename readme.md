@@ -50,12 +50,30 @@ pip install -r requirements.txt
     ```
 
     * The script will look for a key named 'GEMINI_API_KEY'. Please do not use a different name.
+  
+## Database configuration
+
+This project now uses a hosted database. Provide the connection string via the DATABASE_URL environment variable.
+
+**Example (PostgreSQL)**
+
+macOS/Linux
+
+```
+export DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DBNAME"
+```
+
+Windows
+
+```
+$env:DATABASE_URL = "postgresql://USER:PASSWORD@HOST:5432/DBNAME"
+```
 
 ## How to use
 
 1. **Populate the Database**
 
-Run the ```main.py``` script to scrape the latest data from all providers and save it to the outages.db SQLite database.
+Run the ```main.py``` script to scrape the latest data from all providers and save it to the database.
 
 ```
 python main.py
