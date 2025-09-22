@@ -5,7 +5,7 @@ from power_outages_api.electric_providers import ElectricProvider
 class Edenorte(ElectricProvider):
     url = 'https://edenorte.com.do/category/programa-de-mantenimiento-de-redes/'
     def __init__(self):
-        self.columns = ['province', 'day', 'time', 'sectors', '']
+        self.columns = ['province', '', '', '', '', '', 'day', 'time', '', '', '']
         super().__init__(Edenorte.url)
         
     @staticmethod
